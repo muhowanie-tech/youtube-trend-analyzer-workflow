@@ -1,0 +1,572 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1024,
+        272
+      ],
+      "id": "95a2dfc7-dbee-4efd-850c-21e666f3291d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "score",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        512
+      ],
+      "id": "4a140f91-ed6a-4fac-9a50-72703ea69219",
+      "name": "Sort"
+    },
+    {
+      "parameters": {
+        "maxItems": 20
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        352,
+        512
+      ],
+      "id": "6ec15111-bc61-4ddb-819c-c95a4421ccd3",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={   \"contents\": [     {       \"role\": \"user\",       \"parts\": [         {           \"file_data\": {             \"file_uri\": \"{{$json.fileUri}}\",             \"mime_type\": \"{{$json.mimeType}}\"           }         },         {           \"text\": \"Rola: Jesteś ekspertem od strategii treści i analizy viralowych filmów. Twoim zadaniem jest rozłożyć każdy film na czynniki pierwsze i znaleźć najważniejsze elementy, które sprawiły, że osiągnął wysokie zasięgi. Cel: Znajduj formaty filmów, które są najbardziej powtarzalne i mogą być użyte przez każdego twórcę. Skupiaj się wyłącznie na elementach, które można odtworzyć. Ignoruj szczęście, trendy i przypadkowe czynniki. Styl pisania: Pisz w stylu Alexa Hormoziego. Używaj krótkich, mocnych zdań. Unikaj skomplikowanego słownictwa. Pisz prostym językiem na poziomie około 6 klasy szkoły podstawowej. Każde zdanie ma wnosić wartość. Nie używaj metafor, jeśli nie pomagają zrozumieć tematu. Nie dodawaj wstępów, powitań ani podsumowań. Przechodź od razu do sedna. Nie używaj półpauz ani myślników typograficznych. Używaj wyłącznie kropek i dwukropków. Kluczowe słowa zapisuj Wielką Literą dla podkreślenia ich znaczenia. Dla każdego analizowanego filmu określ: jaki jest Hak w pierwszych 3 sekundach, jaki Problem rozwiązuje, jaka jest główna Logika przekazu, jakie Emocje utrzymują uwagę widza, w jaki sposób autor buduje Wiarygodność, jaka jest Struktura filmu, które elementy są najbardziej Powtarzalne i mogą działać w każdej niszy oraz dlaczego ten format osiągnął wysokie wyniki.\"         }       ]     }   ] }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -992,
+        976
+      ],
+      "id": "bd71b2b0-0b22-45d5-bdc2-307eb7673361",
+      "name": "GEMINI ANALIZA FILMÓW",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6MinoCL7dh0dlifW",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "statistics"
+            },
+            {
+              "name": "id",
+              "value": "={{$json.videoId}}"
+            },
+            {
+              "name": "key",
+              "value": "YOUR_YOUTUBE_API_KEY"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        272
+      ],
+      "id": "ac3ddcb8-6907-4b86-935d-1f8f93756fd8",
+      "name": "Pobranie statystyk filmów"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "q",
+              "value": "={{$json.query}}"
+            },
+            {
+              "name": "type",
+              "value": "video"
+            },
+            {
+              "name": "maxResults",
+              "value": "500"
+            },
+            {
+              "name": "regionCode",
+              "value": "PL"
+            },
+            {
+              "name": "key",
+              "value": "YOUR_YOUTUBE_API_KEY"
+            },
+            {
+              "name": "order",
+              "value": "date"
+            },
+            {
+              "name": "publishedAfter",
+              "value": "={{ new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -384,
+        272
+      ],
+      "id": "eb507e60-5b9b-44a7-94a8-4c126b0c750d",
+      "name": "przegląd filmów yt"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  { json: { query: \"football meme\" } },\n  { json: { query: \"football comedy\" } },\n  { json: { query: \"funny football\" } },\n  { json: { query: \"sunday league football\" } },\n\n  { json: { query: \"brainrot meme\" } },\n  { json: { query: \"viral meme\" } },\n  { json: { query: \"funny edit\" } },\n  { json: { query: \"trending audio\" } },\n  { json: { query: \"sigma meme\" } },\n  { json: { query: \"pov meme\" } }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -704,
+        272
+      ],
+      "id": "54f7cbd7-bfdb-4e47-9f49-594e696e31f0",
+      "name": "Filtruj po Kategoriach"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=yt-dlp -o \"/root/.n8n-files/%(title)s.%(ext)s\" \"{{$json.url}}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        720
+      ],
+      "id": "57aeafcb-80c8-4968-aedb-da63b8f68826",
+      "name": "Pobieranie filmów na dysk"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/root/.n8n-files/*.webm",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        720
+      ],
+      "id": "95e19ce2-49d2-4713-bb00-8a9b32963ad3",
+      "name": "Zczytanie katalogu filmów",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "resource": "file"
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        720
+      ],
+      "id": "fc685857-b102-41ba-8553-5ff161e9ec1f",
+      "name": "Wrzucenie Filmów na serwery gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6MinoCL7dh0dlifW",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5.4-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-5.4-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Na podstawie otrzymanego tekstu  : {{ $json.candidates[0].content.parts[0].text }}\nprzygotuj wyłącznie skróconą analizę. Odrzuć wszystkie materiały, które nie są związane z piłką nożną lub których nie da się odtworzyć zgodnie z wcześniej otrzymanym raportem. Uwzględnij tylko filmy, z których można wyciągnąć praktyczne wnioski i które nadają się do powtórzenia. Każdy zakwalifikowany film opisz w maksymalnie dziesięciu zdaniach. Wyjaśnij, o czym jest materiał, co najbardziej przyciąga uwagę widzów, dlaczego osiągnął dobre wyniki oraz czy przedstawiony format jest aktualnym trendem, czy raczej pojedynczym przypadkiem. Na końcu wskaż, jakie elementy warto wykorzystać we własnych materiałach. Pisz zwięźle, konkretnie i poprawną polszczyzną, zachowując logiczną strukturę i opierając się wyłącznie na informacjach zawartych w otrzymanym tekście. \n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -640,
+        976
+      ],
+      "id": "e418f855-262f-43f4-8e32-490276768ff0",
+      "name": "Przygotowany opis Filmów",
+      "credentials": {
+        "openAiApi": {
+          "id": "qKWpS620mdUCpsva",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8637587526",
+        "text": "={{ $json.output[0].content[0].text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        976
+      ],
+      "id": "bb18f9ba-33a8-4808-b25a-0324e94363f0",
+      "name": "Przesłanie na telegrama",
+      "webhookId": "5cce1f16-e56e-4c08-b4d6-23f7e9a06e6f",
+      "credentials": {
+        "telegramApi": {
+          "id": "guf0UopkwSJTOsyS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\nreturn data.items.map(video => ({\n  json: {\n    title: video.snippet.title,\n    channel: video.snippet.channelTitle,\n    videoId: video.id.videoId,\n    url: `https://www.youtube.com/watch?v=${video.id.videoId}`\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        272
+      ],
+      "id": "8d6300e0-c5b9-4105-b324-af0bbee025a3",
+      "name": "Zwróć tylko 4 dane"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const views = $json.views;\nconst likes = $json.likes;\nconst comments = $json.comments;\n\nlet score = 0;\n\nscore += Math.min(views / 10000, 50);\nscore += Math.min(likes / 1000, 30);\nscore += Math.min(comments / 100, 20);\n\nreturn {\n  json: {\n    ...$json,\n    score\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1088,
+        512
+      ],
+      "id": "92cc2543-f9fc-4a42-9839-903453662807",
+      "name": "Ranking filmów"
+    },
+    {
+      "parameters": {
+        "content": "Pobieranie danych",
+        "height": 240,
+        "width": 1872,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        240
+      ],
+      "id": "6a502b41-2d1c-4ee2-a0cb-b2a78b2bcba2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Ranking",
+        "height": 208,
+        "width": 1872
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        480
+      ],
+      "id": "b6e74747-a1c7-451b-8fd9-2d08e291013a",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "Przetwarzanie pliku",
+        "height": 240,
+        "width": 1872,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        688
+      ],
+      "id": "e677be1f-3d13-4464-8b9a-2b036fc31e92",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "Analiza Ai i wysyłka",
+        "height": 240,
+        "width": 1872,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        928
+      ],
+      "id": "62f7fea4-b736-4065-9272-e984ac0f3d5b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -240
+      ],
+      "id": "5af0d739-d076-40ce-b34a-2bf92f4fb69e",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const stats = $json.items?.[0]?.statistics ?? {};\n\nreturn {\n  json: {\n    ...$('Zwróć tylko 4 dane').item.json,\n\n    views: Number(stats.viewCount || 0),\n    likes: Number(stats.likeCount || 0),\n    comments: Number(stats.commentCount || 0)\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        272
+      ],
+      "id": "ba2b57a4-caac-4bbd-b319-ceb14874b8ca",
+      "name": "Uporządkowanie statystyk"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filtruj po Kategoriach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Pobieranie filmów na dysk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GEMINI ANALIZA FILMÓW": {
+      "main": [
+        [
+          {
+            "node": "Przygotowany opis Filmów",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pobranie statystyk filmów": {
+      "main": [
+        [
+          {
+            "node": "Uporządkowanie statystyk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "przegląd filmów yt": {
+      "main": [
+        [
+          {
+            "node": "Zwróć tylko 4 dane",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtruj po Kategoriach": {
+      "main": [
+        [
+          {
+            "node": "przegląd filmów yt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pobieranie filmów na dysk": {
+      "main": [
+        [
+          {
+            "node": "Zczytanie katalogu filmów",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zczytanie katalogu filmów": {
+      "main": [
+        [
+          {
+            "node": "Wrzucenie Filmów na serwery gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wrzucenie Filmów na serwery gemini": {
+      "main": [
+        [
+          {
+            "node": "GEMINI ANALIZA FILMÓW",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Przygotowany opis Filmów": {
+      "main": [
+        [
+          {
+            "node": "Przesłanie na telegrama",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Przesłanie na telegrama": {
+      "main": [
+        []
+      ]
+    },
+    "Zwróć tylko 4 dane": {
+      "main": [
+        [
+          {
+            "node": "Pobranie statystyk filmów",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ranking filmów": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Uporządkowanie statystyk": {
+      "main": [
+        [
+          {
+            "node": "Ranking filmów",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "996c16f3-a9c6-4e79-9b91-20dd3ae4d156",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e378a5b3bb26d48f881fac53acc638a487d538878c09b092af249bb81802ed0a"
+  },
+  "nodeGroups": [],
+  "id": "0uvBtrrVWqP1fUjn",
+  "tags": []
+}
