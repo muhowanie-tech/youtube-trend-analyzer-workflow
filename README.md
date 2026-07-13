@@ -1,5 +1,7 @@
 # YouTube Trend Analyzer & AI Content Strategist
 
+![Workflow n8n](n8n.png)
+
 Automatyczny workflow zbudowany w **n8n**, który codziennie skanuje YouTube w poszukiwaniu viralowych filmów w wybranych kategoriach, ocenia je własnym algorytmem rankingowym, pobiera najlepsze materiały, analizuje je multimodalnie przy pomocy AI i wysyła gotowy raport strategiczny na Telegram — w pełni bez udziału człowieka.
 
 ## Jak to działa
